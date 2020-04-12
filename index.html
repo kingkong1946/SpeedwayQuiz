@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://chancejs.com/chance.js"></script>
+
+    <style>
+        .my-card {
+            width: 500px;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mdc-layout-grid" id="app">
+        <div class="mdc-layout-grid__cell">
+            <div class="my-card mdc-card" v-for="question in questions">
+                <div class="mdc-card__media mdc-card__media--16-9"
+                    v-bind:style="{ backgroundImage: `url('${question.backgroundUrl}')` }">
+                    <div class="mdc-card__media-content"></div>
+                </div>
+                <div class="mdc-card__actions">
+                    <div class="mdc-layout-grid">
+                        <div class="mdc-layout-grid__inner">
+                            <div class="mdc-layout-grid__cell--span-6">
+                                <button class="mdc-button mdc-card__action mdc-card__action--button"
+                                    v-on:click="question.selected('A')"
+                                    v-bind:class="{ 'mdc-button--raised': question.selectedAnwser == 'A' }">
+                                    <div class="mdc-button__ripple"></div>
+                                    <span class="mdc-button__label">{{question.A}}</span>
+                                </button>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-6">
+                                <button class="mdc-button mdc-card__action mdc-card__action--button"
+                                    v-on:click="question.selected('B')"
+                                    v-bind:class="{ 'mdc-button--raised': question.selectedAnwser == 'B' }">
+                                    <div class="mdc-button__ripple"></div>
+                                    <span class="mdc-button__label">{{question.B}}</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mdc-layout-grid__inner">
+                            <div class="mdc-layout-grid__cell--span-6">
+                                <button class="mdc-button mdc-card__action mdc-card__action--button"
+                                    v-on:click="question.selected('C')"
+                                    v-bind:class="{ 'mdc-button--raised': question.selectedAnwser == 'C' }">
+                                    <div class="mdc-button__ripple"></div>
+                                    <span class="mdc-button__label">{{question.C}}</span>
+                                </button>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-6">
+                                <button class="mdc-button mdc-card__action mdc-card__action--button"
+                                    v-on:click="question.selected('D')"
+                                    v-bind:class="{ 'mdc-button--raised': question.selectedAnwser == 'D' }">
+                                    <div class="mdc-button__ripple"></div>
+                                    <span class="mdc-button__label">{{question.D}}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mdc-layout-grid__cell">
+            <button class="mdc-button" v-on:click="showAnwser()">Pokaż wynik</button>
+            <span v-if="canShowAnwser">Wynik: {{score}}/17</span>
+        </div>
+    </div>
+</body>
+<script>
+    let questions = [];
+    let anwsers = [
+        'Leszno',
+        'Warszawa',
+        'Kraków',
+        'Rzeszów',
+        'Gorzów',
+        'Ruda Śląska',
+        'Łódź',
+        'Zielona Góra',
+        'Machowa',
+        'Poznań',
+        'Toruń',
+        'Gdańsk',
+        'Chorzów',
+        'Częstochowa',
+        'Świętochłowice'
+    ]
+
+    for (let i = 1; i < 18; ++i) {
+        let trueAnwser = getAnwser(i);
+
+        let clonedAnwsers = [...anwsers];
+
+        clonedAnwsers.splice(clonedAnwsers.indexOf(trueAnwser), 1);
+
+        let question = {
+            backgroundUrl: "Stadiony/" + i + ".jpg",
+            selectedAnwser: null,
+            selected: function (anwser) {
+                this.selectedAnwser = anwser;
+            }
+        }
+
+        var anwserLetters = ['A', 'B', 'C', 'D'];
+
+        for (let j = 0; j < 3; ++j) {
+            var index = chance.integer({
+                min: 0,
+                max: clonedAnwsers.length - 1
+            });
+            var letter = anwserLetters.splice(chance.integer({
+                min: 0,
+                max: 3 - j
+            }), 1);
+            question[letter] = clonedAnwsers.splice(index, 1)[0];
+        }
+
+        question[anwserLetters[0]] = trueAnwser;
+        question.anwser = anwserLetters[0];
+
+        questions.push(question);
+    }
+
+    function getAnwser(number) {
+        switch (number) {
+            case 1:
+                return 'Leszno';
+            case 2:
+                return 'Warszawa';
+            case 3:
+                return 'Kraków';
+            case 4:
+                return 'Rzeszów';
+            case 5:
+                return 'Gorzów';
+            case 6:
+                return 'Warszawa';
+            case 7:
+                return 'Ruda Śląska';
+            case 8:
+                return 'Łódź';
+            case 9:
+                return 'Zielona Góra';
+            case 10:
+                return 'Machowa';
+            case 11:
+                return 'Poznań';
+            case 12:
+                return 'Toruń';
+            case 13:
+                return 'Gdańsk';
+            case 14:
+                return 'Leszno';
+            case 15:
+                return 'Chorzów';
+            case 16:
+                return 'Częstochowa';
+            case 17:
+                return 'Świętochłowice';
+        }
+    }
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            questions: questions,
+            canShowAnwser: false
+        },
+        methods: {
+            showAnwser: function () {
+                console.log(this.canShowAnwser);
+                this.canShowAnwser = true;
+            }
+        },
+        computed: {
+            score: vm => vm.questions.filter(q => q.anwser == q.selectedAnwser).length
+        }
+    });
+</script>
+
+</html>
